@@ -23,11 +23,23 @@ if (is_uploaded_file($temp['tmp_name'])) {
 		return;
 	}
 
+	$file_name_exploaded = explode(".", $temp['name']);
+	$file_name = array_shift($file_name_exploaded);
+	$file_extension = implode(".", $file_name_exploaded);
+	$file_name_pattern = "$file_name*";
+
+	$files = glob($imageFolder . "/" . $file_name_pattern);
+	if (count($files) > 0) {
+		$file_name .= "(" . count($files) . ")";
+	}
+
+	$file_name .= "." . $file_extension;
+
 	// Accept upload if there was no origin, or if it is an accepted origin
-	$filetowrite = $imageFolder . $temp['name'];
+	$filetowrite = $imageFolder . $file_name;
 	move_uploaded_file($temp['tmp_name'], $filetowrite);
 
-	$url = str_replace(DOCROOT, '', $imageFolder) . $temp['name'];
+	$url = str_replace(DOCROOT, '', $imageFolder) . $file_name;
 	// Respond to the successful upload with JSON.
 	// Use a location key to specify the path to the saved image resource.
 	// { location : '/your/uploaded/image/file'}
